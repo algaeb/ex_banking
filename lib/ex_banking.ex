@@ -25,4 +25,14 @@ defmodule ExBanking do
   def deposit(user, amount, currency) do
     BankingServer.deposit(user, amount, currency)
   end
+
+  @spec withdraw(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error
+  def withdraw(user, amount, currency) do
+    BankingServer.withdraw(user, amount, currency)
+  end
+
+  @spec get_balance(user :: String.t, currency :: String.t) :: {:ok, balance :: number} | banking_error
+  def get_balance(user, currency) do
+    BankingServer.get_balance(user, currency)
+  end
 end

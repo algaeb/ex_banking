@@ -36,6 +36,34 @@ defmodule BankingServerTest do
             ExBanking.BankingServer.start_link(current_state)
             {:ok, 110} = ExBanking.deposit("Zack", 10, "$")
         end
+
+        test "[VALID] Withdraw money" do
+            ExBanking.BankingServer.start_link(%State{})
+            :ok = ExBanking.create_user("Zubair")
+            {:ok, 10} = ExBanking.deposit("Zubair", 10, "$")
+            {:ok, 5} = ExBanking.withdraw("Zubair", 5, "$")
+        end
+
+        test "[VALID] Withdraw money gives not_enough_money" do
+            ExBanking.BankingServer.start_link(%State{})
+            :ok = ExBanking.create_user("Zubair")
+            {:ok, 10} = ExBanking.deposit("Zubair", 10, "$")
+            :not_enough_money = ExBanking.withdraw("Zubair", 15, "$")
+        end
+
+        test "[VALID] GetUser amount" do
+            ExBanking.BankingServer.start_link(%State{})
+            :ok = ExBanking.create_user("Zubair")
+            {:ok, 10} = ExBanking.deposit("Zubair", 10, "$")
+            {:ok, 10} = ExBanking.get_balance("Zubair", "$")
+        end
+        test "[INVALID] GetUser amount/ user doesnt exist" do
+            ExBanking.BankingServer.start_link(%State{})
+            :ok = ExBanking.create_user("Zubair")
+            {:ok, 10} = ExBanking.deposit("Zubair", 10, "$")
+            {:ok, 10} != ExBanking.get_balance("alpha", "$")
+            :user_does_not_exist = ExBanking.get_balance("alpha", "$")
+        end
     end
 
 end
