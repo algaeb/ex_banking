@@ -1,6 +1,8 @@
 defmodule ExBanking.BankingServer do
   use GenServer
 
+  alias ExBanking.{User, Balance}
+  
   @processname :banking
 
   defmodule State do
@@ -14,9 +16,17 @@ defmodule ExBanking.BankingServer do
 
   def create_user(name) do
     case lookup_user(name) do
-      :ok ->
-        GenServer.call(@processname, {:create_user, name})
-      :error -> :user_already_exists  
+      [] ->
+        user = %User{name: name}
+        GenServer.call(@processname, {:create_user, user})
+      list -> :user_already_exists  
+    end
+  end
+
+  def deposit(name, amount, currency) do
+    case lookup_user(name) do
+      [] -> :user_does_not_exist
+      [user] -> GenServer.call(@processname, {:deposit, {user, amount, currency}})
     end
   end
 
@@ -30,17 +40,52 @@ defmodule ExBanking.BankingServer do
   end
 
   def handle_call({:create_user, user}, _from, state) do
-    new_state = %{state | users: [user]}
+    new_state = %{state | users: state.users ++ [user]}
     {:reply, :ok, new_state}
   end
+
+  def handle_call({:deposit, {user, amount, currency}}, _from, state) do
+   {amount, new_state} = case  Enum.filter(user.balances, fn(n) ->
+      n.currency == currency
+    end) do
+      [] ->   new_user = %{user | balances: user.balances ++ [%Balance{amount: amount, currency: currency}] }
+              old_state = %{state | users: state.users -- [user]}
+              new_state = %{old_state | users: old_state.users ++ [new_user]}
+                 {amount, new_state}
+      [result] -> 
+        total_amount = result.amount + amount
+                  new_balance = %{result | amount: total_amount}
+                  rm_bal = %{user | balances: user.balances -- [result]}
+                  upd_user = %{rm_bal | balances: rm_bal.balances ++ [new_balance]}
+                  
+                  old_state = %{state | users: state.users -- [user]}
+                  new_state = %{old_state | users: old_state.users ++ [upd_user]}
+                 {total_amount, new_state}
+    end
+    {:reply, {:ok, amount} , new_state}
+  end
+  # def handle_call({:deposit, {user, amount, currency}}, _from, state) do
+  #     # {amount, new_state} = case user.balances do
+  #     #     [] -> new_user =  %{user | balances: [%Balance{amount: amount, currency: currency}] }
+  #     #           old_state = %{state | users: state.users -- [user]}
+  #     #           new_state = %{old_state | users: old_state.users ++ [new_user]}
+  #     #           {amount, new_state}
+  #     #     list -> 
+  #     #         {10, state}
+  #     #   end
+
+  #       Enum.filter(user.balances, fn n -> 
+  #           n.currency == currency
+  #       end) |> IO.inspect
+        
+  #   {:reply, {:ok, 10}, state}
+  #  end
 
   def handle_call({:lookup_user, username}, _from, state) do
      list = Enum.filter(state.users, fn n -> 
           n.name == username
     end)
-      case list  do
-        [] -> {:reply, :ok, state}
-        list -> {:reply, :error, state}
-      end        
+      {:reply, list, state}     
   end
+
 end

@@ -20,4 +20,9 @@ defmodule ExBanking do
   def create_user(user) do
     BankingServer.create_user(user)
   end
+
+  @spec deposit(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error
+  def deposit(user, amount, currency) do
+    BankingServer.deposit(user, amount, currency)
+  end
 end
