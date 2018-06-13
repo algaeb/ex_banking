@@ -14,7 +14,7 @@ defmodule ExBanking.BankingServer do
     GenServer.start_link(__MODULE__, args, name: @processname)
   end
 
-  def create_user(name) do
+  def create_user(name) when is_bitstring(name) do
     case lookup_user(name) do
       [] ->
         user = %User{name: name}
@@ -24,15 +24,17 @@ defmodule ExBanking.BankingServer do
         :user_already_exists
     end
   end
+  def create_user(_), do: :wrong_arguments
 
-  def deposit(name, amount, currency) do
+  def deposit(name, amount, currency) when is_bitstring(name) and  is_number(amount) and is_bitstring(currency) do
     case lookup_user(name) do
       [] -> :user_does_not_exist
       [user] -> GenServer.call(@processname, {:deposit, {user, amount, currency}})
     end
   end
+  def deposit(_, _, _), do: :wrong_arguments
 
-  def withdraw(name, amount, currency) do
+  def withdraw(name, amount, currency) when is_bitstring(name) and  is_number(amount) and is_bitstring(currency) do
     case lookup_user(name) do
       [] ->
         :user_does_not_exist
@@ -41,8 +43,9 @@ defmodule ExBanking.BankingServer do
         GenServer.call(@processname, {:withdraw, {user, amount, currency}})
     end
   end
+  def withdraw(_, _, _), do: :wrong_arguments
 
-  def send_money(from_name, to_name, amount, currency) do
+  def send_money(from_name, to_name, amount, currency) when is_bitstring(from_name) and is_bitstring(to_name) and is_number(amount) and is_bitstring(currency) do
     case lookup_user(from_name) do
       [] ->
         :sender_does_not_exist
@@ -62,8 +65,9 @@ defmodule ExBanking.BankingServer do
         end
     end
   end
+  def send(_, _, _, _), do: :wrong_arguments
 
-  def get_balance(name, currency) do
+  def get_balance(name, currency) when is_bitstring(name) and is_bitstring(currency) do
     case lookup_user(name) do
       [] ->
         :user_does_not_exist
@@ -72,6 +76,7 @@ defmodule ExBanking.BankingServer do
         GenServer.call(@processname, {:get_user, {user, currency}})
     end
   end
+  def get_balance(_, _), do: :wrong_arguments
 
   def lookup_user(username) do
     GenServer.call(@processname, {:lookup_user, username})
