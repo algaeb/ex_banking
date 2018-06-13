@@ -10,8 +10,7 @@ defmodule ExBanking.Application do
     # List all child processes to be supervised
     children = [
       # Starts a worker by calling: ExBanking.Worker.start_link(arg)
-     #supervisor(ExBanking.BankingServer, [%ExBanking.BankingServer.State{}])
-      
+      supervisor(ExBanking.BankingServer, [%ExBanking.BankingServer.State{}])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
