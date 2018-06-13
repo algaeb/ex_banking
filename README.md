@@ -38,24 +38,29 @@ Requirements for public functions provided by ExBanking module. Any function sho
   ```
 
 `@spec create_user(user :: String.t) :: :ok | banking_error`
+
 Function creates new user in the system
 New user has zero balance of any currency
 
 
 `@spec deposit(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error`
+
 Increases user’s balance in given currency by amount value
 Returns new_balance of the user in given format
 
 
 `@spec withdraw(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error`
+
 Decreases user’s balance in given currency by amount value
 Returns new_balance of the user in given format
 
 
 `@spec get_balance(user :: String.t, currency :: String.t) :: {:ok, balance :: number} | banking_error`
+
 Returns balance of the user in given format
 
 `@spec send(from_user :: String.t, to_user :: String.t, amount :: number, currency :: String.t) :: {:ok, from_user_balance :: number, to_user_balance :: number} | banking_error`
+
 Decreases from_user’s balance in given currency by amount value
 Increases to_user’s balance in given currency by amount value
 Returns balance of from_user and to_user in given format
