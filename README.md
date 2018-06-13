@@ -1,10 +1,10 @@
 # ExBanking
 
-##elixir-test
+## elixir-test
 
 Test task for Elixir developers. Candidate should write a simple banking OTP application in Elixir language.
 
-###General acceptance criteria
+### General acceptance criteria
 
 All code is in git repo (candidate can use his/her own github account).
 OTP application is a standard mix project.
@@ -20,7 +20,8 @@ Money amount of any currency should not be negative.
 Application should provide 2 decimal precision of money amount for any currency.
 Amount of money incoming to the system should be equal to amount of money inside the system + amount of withdraws (money should not appear or disappear accidentally).
 User and currency type is any string. Case sensitive. New currencies / users can be added dynamically in runtime. In the application, there should be a special public function (described below) for creating users. Currencies should be created automatically (if needed).
-API reference
+
+### API reference
 Requirements for public functions provided by ExBanking module. Any function should return success result or error result. Success result is different for each function, error result is generic
 
 ```@type banking_error :: {:error,
@@ -59,7 +60,7 @@ Decreases from_user’s balance in given currency by amount value
 Increases to_user’s balance in given currency by amount value
 Returns balance of from_user and to_user in given format
 
-###Performance
+### Performance
 
 In every single moment of time the system should handle 10 or less operations for every individual user (user is a string passed as the first argument to API functions). If there is any new operation for this user and he/she still has 10 operations in pending state - new operation for this user should immediately return too_many_requests_to_user error until number of requests for this user decreases < 10
 The system should be able to handle requests for different users in the same moment of time
