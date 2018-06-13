@@ -71,5 +71,14 @@ defmodule BankingServerTest do
       {:ok, 10} != ExBanking.get_balance("alpha", "$")
       :user_does_not_exist = ExBanking.get_balance("alpha", "$")
     end
+
+    test "[VALID] Send Money" do
+      ExBanking.BankingServer.start_link(%State{})
+      :ok = ExBanking.create_user("Zubair")
+      :ok = ExBanking.create_user("Zack")
+      {:ok, 10} = ExBanking.deposit("Zubair", 10, "$")
+      {:ok, 10} = ExBanking.deposit("Zack", 10, "$")
+      {:ok, 6, 14} = ExBanking.send("Zubair", "Zack", 4, "$")\
+    end
   end
 end
